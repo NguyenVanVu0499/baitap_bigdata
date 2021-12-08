@@ -7,6 +7,8 @@ today = date.today()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 userCollection = database.get_collection("nguoi_dung")
+
+
 """
 =================================================
     DEFINE RETURN TYPE FOR USER
@@ -53,9 +55,8 @@ async def authenticate_user(username: str, password: str):
 # async def create_user(new_user: dict, current_user)->dict:
 async def create_user(new_user: dict)->dict:
 
-    elecbid = await connect_bid_db()
     name = new_user['ten_nguoi_dung']
-    user_existed = await elecbid.user.find_one({"ten_nguoi_dung":name}) 
+    user_existed = userCollection.find_one({"ten_nguoi_dung":name}) 
     
     if user_existed:
         return 2
@@ -64,9 +65,8 @@ async def create_user(new_user: dict)->dict:
         new_user['ngay_tao'] = '{}'.format(today)
         new_user['trang_thai'] = True
         new_user['ten_nguoi_dung'] = new_user['ten_nguoi_dung'].lower()
-
-        user = await elecbid.user.insert_one(new_user)
-        # user_inserted = await elecbid.user.find_one({"_id":user.inserted_id})
+        user = userCollection.insert_one(new_user)
+        userCollection.find_one({"_id":user.inserted_id})
         return 3
 
 
@@ -84,18 +84,7 @@ async def get_all_user(current_user, user_name, page_size:int = 10, page_num:int
     regx = re.compile("{}".format(user_name), re.IGNORECASE)
     if user_name != None:
         query['ten_nguoi_dung'] = regx
-    
-    if current_user['rolename'] != "Quản trị viên":
-        role_ids = []
-        query1 = {}
-        regxstr = re.compile(".*{}.*".format(current_user['roleid']), re.IGNORECASE)
-        query1['path'] = regxstr
 
-        for n in roleCollection.find(query1):
-            role_ids.append(str(n['_id']))
-        role_ids.append(current_user['roleid'])
-
-        query['ma_quyen_nguoi_dung'] = {'$in': role_ids}
     user_info = []
     
     # Calculate number of documents to skip
@@ -111,10 +100,11 @@ async def get_all_user(current_user, user_name, page_size:int = 10, page_num:int
     return user_data
 
 
+"""
+    Update a user with UserId.
+"""
 async def update_user(user_id :str, data_update_user: dict):
-    """
-        Update a user with UserId.
-    """
+
     # Return false if an empty request body is sent.
     if len(data_update_user) < 1:
         return False
@@ -125,9 +115,6 @@ async def update_user(user_id :str, data_update_user: dict):
         if user_existed:
             return 2
         else:
-            ma_chuc_vu = data_update_user["ma_chuc_vu"] 
-            chuc_vu = cv_Collection.find_one({"_id":ObjectId(ma_chuc_vu)})
-            data_update_user['ten_chuc_vu'] = chuc_vu['ten'] 
             data_update_user['ngay_tao'] = '{}'.format(today)
             data_update_user['trang_thai'] = True
             data_update_user['ten_nguoi_dung'] = data_update_user['ten_nguoi_dung'].lower()
@@ -138,11 +125,12 @@ async def update_user(user_id :str, data_update_user: dict):
         return {"error":"not found any user"}
 
 
+"""
+    If force is True delete user.
+    else update status user .
+"""
 async def delete_user(id:str, force: bool):
-    """
-        If force is True delete user.
-        else update status user .
-    """
+
 
     if force:
         return userCollection.delete_one({"_id":ObjectId(id)}) 

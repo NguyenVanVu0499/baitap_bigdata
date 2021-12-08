@@ -32,14 +32,15 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-async def authenticate_user(username: str, password: str):
+def authenticate_user(username: str, password: str):
     user = userCollection.find_one({
-        'ten_nguoi_dung' : username,        
+        'ten_nguoi_dung' : username,
+        'trang_thai': True,        
     })
-    
+    if not user:
+        return False
     if not verify_password(password, user['mat_khau']):
         return False
-    
     return user
 
 

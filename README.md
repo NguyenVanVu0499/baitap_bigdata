@@ -1,8 +1,8 @@
-# Welcome to baitap_bigdata
+# Welcome to Quản Lý Bãi Đỗ Xe.
 
 Use browser to re-copy a web page
 
-- Author : [ai-academy-vn](Ai-academy-dev)
+- Author : [NguyenVanVu](Ai-academy-dev)
 
 ## Installation 🔥
 - Step 1: Create virtual environments 🔥
@@ -26,9 +26,9 @@ Use browser to re-copy a web page
 
 `python3 hagiang_api_server.py`
 
-`http://45.77.245.61:6868/docs#/`
+`http://0.0.0.0:8081/docs#/`
 
-`http://127.0.0.1:6868/docs#`
+`http://127.0.0.1:8081/docs#`
 
 ## Requirements to script service install
 - Python3, Pip3

@@ -8,7 +8,6 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     ten_nguoi_dung: str
-    ma_quyen_nguoi_dung: str
 
 class User(BaseModel):
     username: str

@@ -3,8 +3,8 @@ from typing import Optional
 
 from fastapi import Depends, FastAPI, HTTPException, status,APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import JWTError, jwt
-from passlib.context import CryptContext
+# from jose import JWTError, jwt
+# from passlib.context import CryptContext
 from pydantic import BaseModel
 
 from .authdb import authenticate_user, create_access_token,get_current_active_user
@@ -35,7 +35,7 @@ router = APIRouter()
 @router.post("/token")
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
-
+    print(print("hihi",user))
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -51,7 +51,6 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             "anh_dai_dien": user["anh_dai_dien"],
 
         }  
-    print(data)
     access_token = create_access_token(
         data=data, 
         expires_delta=access_token_expires
