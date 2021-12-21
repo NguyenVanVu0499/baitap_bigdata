@@ -52,8 +52,8 @@ async def authenticate_user(username: str, password: str):
     return 3 : insert success.
 =================================================
 """
-# async def create_user(new_user: dict, current_user)->dict:
-async def create_user(new_user: dict)->dict:
+async def create_user(new_user: dict, current_user)->dict:
+# async def create_user(new_user: dict)->dict:
 
     name = new_user['ten_nguoi_dung']
     user_existed = userCollection.find_one({"ten_nguoi_dung":name}) 

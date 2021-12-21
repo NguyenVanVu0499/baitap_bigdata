@@ -1,6 +1,7 @@
 
 from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
+from pymongo.common import partition_node
 from .model import UserSchemaIn, UpdateUserModel, ChangePasswordSchema
 import re
 from services.auth.authdb import get_current_active_user
@@ -28,19 +29,19 @@ router = APIRouter()
 #     return pwd_context.hash(password)
 
 @router.get("/user", summary="Get all user")
-async def get_all_user_data(current_user = Depends(get_current_active_user), user_name:str= None,page_size:int = 10, page_num:int = 1):
+async def get_all_user_data(current_user = Depends(get_current_active_user) , user_name:str= None,page_size:int = 10, page_num:int = 1):
     user_infos = await get_all_user(current_user, user_name=user_name, page_size=page_size, page_num=page_num)
     x = True if user_infos else False
     return (lambda: ResponseModel(user_infos,"Rỗng"), lambda: ResponseModel(user_infos,"Lấy Ra Thành Công"))[x]()
 
 
 @router.post("/user", summary="Create New User")
-# async def insert_user(current_user = Depends(get_current_active_user),  user_input:UserSchemaIn=Body(...)):
-async def insert_user(user_input:UserSchemaIn=Body(...)):
+async def insert_user(current_user = Depends(get_current_active_user),  user_input:UserSchemaIn=Body(...)):
+# async def insert_user(user_input:UserSchemaIn=Body(...)):
     user = jsonable_encoder(user_input)
 
-    # new_user = await create_user(user, current_user)
-    new_user = await create_user(user)
+    new_user = await create_user(user, current_user)
+    # new_user = await create_user(user)
     if new_user == 2:
         return ErrorResponseModel(f"{user['ten_nguoi_dung']} Đã Tồn Tại" , 422 ," Lỗi !")
     elif new_user == 4:

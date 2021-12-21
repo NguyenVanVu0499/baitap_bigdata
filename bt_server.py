@@ -3,6 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from services.auth.route import router as AuthRoute
 from services.user.route import router as UserRoute
+from services.upload.route import router as UploadRoute
+from services.baocao.route import router as BaocaoRoute
+
+from fastapi.staticfiles import StaticFiles
 
 import uvicorn
 
@@ -19,12 +23,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+app.include_router(UploadRoute,tags=["Upload FIle"],prefix="")
 
 app.include_router(AuthRoute, tags=["Xác Thực"],prefix="")
 
 app.include_router(UserRoute, tags=["Người dùng"], prefix="")
 
-# app.include_router
+app.include_router(BaocaoRoute, tags=["Báo cáo"], prefix="")
 
 @app.get("/",tags = ["Welcome"])
 async def welcome():
